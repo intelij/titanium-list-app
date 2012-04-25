@@ -1,7 +1,7 @@
 var data = [
-    {title:'List Content 1', hasChild:true, toUrl:'window2.js'},
+    {title:'List Content 1', hasChild:true, toUrl:'window2.js', header:"Header 1"},
     {title:'List Content 2'},
-    {title:'List Content 3'},
+    {title:'List Content 3',header:"Header 2"},
     {title:'List Content 4'}
 ];
 
