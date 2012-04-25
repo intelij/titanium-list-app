@@ -7,7 +7,8 @@ var data = [
 
 // create table view
 var tableview = Titanium.UI.createTableView({
-    data:data
+    data:data,
+    editable:true
 });
 
 var win1 = Titanium.UI.createWindow({
@@ -15,6 +16,11 @@ var win1 = Titanium.UI.createWindow({
 });
 //add table view to that object
 win1.add(tableview);
+
+var addBtn = Titanium.UI.createButton({
+	systemButton:Titanium.UI.iPhone.SystemButton.ADD
+});
+win1.setRightNavButton(addBtn);
 
 //win1.open();
 
@@ -35,3 +41,8 @@ var navGroup = Ti.UI.iPhone.createNavigationGroup({
 var main = Ti.UI.createWindow();
 main.add(navGroup);
 main.open();
+
+addBtn.addEventListener('click',function(){
+	var row = Ti.UI.createTableViewRow(	{title:'List Content Appended'});
+	tableview.appendRow(row);
+});
