@@ -1,9 +1,23 @@
-var data = [
-    {title:'List Content 1', hasChild:true, toUrl:'window2.js', header:"Header 1"},
-    {title:'List Content 2'},
-    {title:'List Content 3',header:"Header 2"},
-    {title:'List Content 4'}
-];
+//var data = [
+//    {title:'List Content 1', hasChild:true, toUrl:'window2.js', header:"Header 1"},
+//    {title:'List Content 2'},
+//   {title:'List Content 3',header:"Header 2"},
+//    {title:'List Content 4'}
+//];
+
+var db = Ti.Database.install('lists.sqlite','lists.sqlite');
+var rows = db.execute('SELECT * FROM LISTS;');
+var data = [];
+
+while (rows.isValidRow())
+{
+    data.push({
+      title:rows.fieldByName('content'),
+      id:rows.fieldByName('id')
+    });
+    rows.next();
+};
+rows.close();
 
 // create table view
 var tableview = Titanium.UI.createTableView({
@@ -42,7 +56,23 @@ var main = Ti.UI.createWindow();
 main.add(navGroup);
 main.open();
 
-addBtn.addEventListener('click',function(){
-	var row = Ti.UI.createTableViewRow(	{title:'List Content Appended'});
+var count = data.length;
+addBtn.addEventListener('click',function(e){
+	row = Ti.UI.createTableViewRow(	{title:'List Content Appended' + count,id:count});
+	db.execute('INSERT INTO lists (content) VALUES (?)',row.title);
 	tableview.appendRow(row);
+	updateRowCount();
 });
+function updateRowCount(){
+	rows  = db.execute('select count(*) as count from lists');
+	while (rows.isValidRow())
+	{
+		count = rows.fieldByName("count");
+		rows.next();
+	};
+	rows.close();
+}
+ tableview.addEventListener('delete', function(e) {
+	db.execute("DELETE FROM lists WHERE id=?",e.row.id);
+	updateRowCount();
+ });
