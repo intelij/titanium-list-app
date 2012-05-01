@@ -1,23 +1,14 @@
-//var data = [
-//    {title:'List Content 1', hasChild:true, toUrl:'window2.js', header:"Header 1"},
-//    {title:'List Content 2'},
-//   {title:'List Content 3',header:"Header 2"},
-//    {title:'List Content 4'}
-//];
-
-var db = Ti.Database.install('lists.sqlite','lists.sqlite');
-var rows = db.execute('SELECT * FROM LISTS;');
-var data = [];
-
-while (rows.isValidRow())
-{
-    data.push({
-      title:rows.fieldByName('content'),
-      id:rows.fieldByName('id')
-    });
-    rows.next();
-};
-rows.close();
+Ti.include("database.js");
+var db = Ti.App.listDb;
+db.createTable();
+var data = db.lists.getAll();
+for(var i =0;i<data.length;i++){
+  datum = data[i];
+  datum.hasChild=true;
+  datum.toUrl="window2.js";
+  datum.title = datum.content;
+  delete datum.content;
+}
 
 // create table view
 var tableview = Titanium.UI.createTableView({
@@ -36,16 +27,12 @@ var addBtn = Titanium.UI.createButton({
 });
 win1.setRightNavButton(addBtn);
 
-//win1.open();
-
 // create table view event listener
 tableview.addEventListener('click', function(e)
 {
     if (e.rowData.toUrl)
     {
         var win2= Titanium.UI.createWindow({url:e.rowData.toUrl});
-        //win1.close();
-        //win2.open();
         navGroup.open(win2);
     }
 });
@@ -58,21 +45,16 @@ main.open();
 
 var count = data.length;
 addBtn.addEventListener('click',function(e){
-	row = Ti.UI.createTableViewRow(	{title:'List Content Appended' + count,id:count});
-	db.execute('INSERT INTO lists (content) VALUES (?)',row.title);
-	tableview.appendRow(row);
-	updateRowCount();
+  var content = 'List Content Appended' + count;
+  var row = Ti.UI.createTableViewRow({
+    title:content,
+    id:count
+  });
+  db.lists.insert(content,count);
+  count = db.lists.count();
+  tableview.appendRow(row);
 });
-function updateRowCount(){
-	rows  = db.execute('select count(*) as count from lists');
-	while (rows.isValidRow())
-	{
-		count = rows.fieldByName("count");
-		rows.next();
-	};
-	rows.close();
-}
- tableview.addEventListener('delete', function(e) {
-	db.execute("DELETE FROM lists WHERE id=?",e.row.id);
-	updateRowCount();
- });
+tableview.addEventListener('delete', function(e) {
+  db.lists.remove(e.row.id);
+  count = db.lists.count();
+});

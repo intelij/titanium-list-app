@@ -1,13 +1,9 @@
-var data = [
-    {title:'Window 2 Content 1'},
-    {title:'Window 2 Content 2'},
-    {title:'Window 2 Content 3'},
-    {title:'Window 2 Content 4'}
-];
- 
-// create table view
-var tableview = Titanium.UI.createTableView({
-    data:data
+var win = Titanium.UI.currentWindow;
+
+var ta = Ti.UI.createTextArea({
+	editable: false, 
+	backgroundColor:'#ccc',
+	value:'Contact\n test@test.com\n 817-555-5555\n http://bit.ly\n 444 Castro Street, Mountain View, CA'
 });
 
-Titanium.UI.currentWindow.add(tableview)
+win.add(ta)
