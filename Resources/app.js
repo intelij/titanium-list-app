@@ -1,6 +1,6 @@
 Ti.include("database.js");
 var db = Ti.App.listDb;
-db.createTable();
+db.lists.createTable();
 var data = db.lists.getAll();
 for(var i =0;i<data.length;i++){
   datum = data[i];
