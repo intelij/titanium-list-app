@@ -1,14 +1,28 @@
 Ti.include("database.js");
 var db = Ti.App.listDb;
 db.lists.createTable();
-var data = db.lists.getAll();
-for(var i =0;i<data.length;i++){
-  datum = data[i];
-  datum.hasChild=true;
-  datum.toUrl="window2.js";
-  datum.title = datum.content;
-  delete datum.content;
-}
+
+var getData=function(){
+  var data = db.lists.getAll();
+  for(var i =0;i<data.length;i++){
+    datum = data[i];
+    datum.hasChild=true;
+    datum.toUrl="window2.js";
+    datum.title = datum.content;
+    delete datum.content;
+  }
+  return data;
+};
+
+var data = getData();
+//var data = db.lists.getAll();
+//for(var i =0;i<data.length;i++){
+//  datum = data[i];
+//  datum.hasChild=true;
+//  datum.toUrl="window2.js";
+//  datum.title = datum.content;
+//  delete datum.content;
+//}
 
 // create table view
 var tableview = Titanium.UI.createTableView({
@@ -32,7 +46,10 @@ tableview.addEventListener('click', function(e)
 {
     if (e.rowData.toUrl)
     {
-        var win2= Titanium.UI.createWindow({url:e.rowData.toUrl});
+        var win2= Titanium.UI.createWindow({
+          url:e.rowData.toUrl,
+          targetId:e.rowData.id
+        });
         navGroup.open(win2);
     }
 });
@@ -48,6 +65,8 @@ addBtn.addEventListener('click',function(e){
   var content = 'List Content Appended' + count;
   var row = Ti.UI.createTableViewRow({
     title:content,
+    hasChild:true,
+    toUrl:"window2.js",
     id:count
   });
   db.lists.insert(content,count);
@@ -57,4 +76,8 @@ addBtn.addEventListener('click',function(e){
 tableview.addEventListener('delete', function(e) {
   db.lists.remove(e.row.id);
   count = db.lists.count();
+});
+
+Ti.App.addEventListener('listRefresh',function(e){
+	tableview.setData(getData());
 });

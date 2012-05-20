@@ -25,6 +25,18 @@ Ti.App.listDb = function(){
 
         return results;
       },
+      get : function(id) {
+        var result = null;
+        var resultSet = conn.execute('SELECT * FROM lists WHERE id = ?', id);
+        if (resultSet.isValidRow()) {
+          result = {
+            id: resultSet.fieldByName("id"),
+            content: resultSet.fieldByName("content")
+          };
+        }
+        resultSet.close();
+        return result;
+      },
       remove:function(id){
         conn.execute("DELETE FROM lists WHERE id = ?", id);
         return conn.rowsAffected;
